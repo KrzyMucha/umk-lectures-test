@@ -1,0 +1,2 @@
+# Dependencies for the Cloud Function
+functions-framework==3.*

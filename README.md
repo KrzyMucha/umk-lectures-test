@@ -1,26 +1,71 @@
-# Hello World — Terraform + Google Cloud Function
+# UMK Lectures - Runtime Test Projects
 
-Krótkie instrukcje do uruchomienia projektu Hello World.
+Repozytorium zawiera wiele pod-projektów testowych z różnymi rozwiązaniami chmury (GCP).
 
-Wymagania:
-- `terraform` (>= 1.0)
-- konto GCP i ustawione poświadczenia (np. `gcloud auth application-default login` lub `GOOGLE_CREDENTIALS`)
+## Struktura projektu
 
-Szybkie kroki:
+```
+global/                      # Wspólne ustawienia Terraform (project, region)
+  ├── variables.tf
+  └── terraform.tfvars
 
-1. Ustaw zmienną projektu (możesz edytować `terraform.tfvars` lub ustawić env):
+hello-function/              # Pierwszy projekt: prosta Cloud Function
+  ├── services/              # Kod aplikacji
+  │   ├── main.py
+  │   └── requirements.txt
+  ├── infra/                 # Infrastruktura Terraform
+  │   ├── main.tf
+  │   ├── variables.tf
+  │   ├── outputs.tf
+  │   └── terraform.tfvars
+  └── README.md
 
-```bash
-export TF_VAR_project=your-gcp-project-id
+symphony-crud/               # Drugi projekt (przyszły)
+  ├── services/
+  ├── infra/
+  └── README.md
 ```
 
-2. Inicjalizuj i zastosuj:
+## Wymagania
 
-```bash
-terraform init
-terraform apply
+- Terraform >= 1.0
+- Konto GCP z włączonym billingiem
+- `gcloud` CLI z autoryzacją: `gcloud auth application-default login`
+
+## Konfiguracja globalna
+
+Ustaw zmienne globalne w `global/terraform.tfvars`:
+
+```hcl
+project = "your-gcp-project-id"
+region  = "us-central1"
 ```
 
-3. Po wdrożeniu w outputach pojawi się `function_url` — to publiczny endpoint funkcji Hello World.
+## Tworzenie nowego projektu
 
-Uwaga: upewnij się, że billing jest włączony w projekcie i że konta/usługi mają odpowiednie uprawnienia.
+Szablon struktury dla nowego projektu:
+
+```bash
+# Przykład: nowy projekt symphony-crud
+mkdir -p symphony-crud/{services,infra}
+
+# Utwórz symlink do globalnych zmiennych
+cd symphony-crud/infra
+ln -s ../../global/terraform.tfvars global.auto.tfvars
+
+# Dodaj pliki Terraform (main.tf, variables.tf, outputs.tf)
+# Dodaj kod aplikacji w services/
+# Utwórz README.md
+```
+
+## Uruchamianie projektu
+
+Każdy pod-projekt uruchamia się osobno. Zobacz README w odpowiednim folderze projektu.
+
+## Projekty
+
+### 1. hello-function
+Prosta Cloud Function HTTP zwracająca "Hello, World!". Zobacz [hello-function/README.md](hello-function/README.md).
+
+### 2. symphony-crud (w przygotowaniu)
+CRUD API dla operacji danych.
