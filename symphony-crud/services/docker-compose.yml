@@ -1,0 +1,32 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: symfony-crud-app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app
+    environment:
+      - APP_ENV=dev
+      - DATABASE_URL=postgresql://symfony:symfony@database:5432/symfony?serverVersion=15&charset=utf8
+    depends_on:
+      - database
+    command: php -S 0.0.0.0:8080 -t public
+
+  database:
+    image: postgres:15-alpine
+    container_name: symfony-crud-db
+    environment:
+      - POSTGRES_USER=symfony
+      - POSTGRES_PASSWORD=symfony
+      - POSTGRES_DB=symfony
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

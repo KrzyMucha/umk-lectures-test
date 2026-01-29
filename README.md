@@ -67,5 +67,5 @@ Każdy pod-projekt uruchamia się osobno. Zobacz README w odpowiednim folderze p
 ### 1. hello-function
 Prosta Cloud Function HTTP zwracająca "Hello, World!". Zobacz [hello-function/README.md](hello-function/README.md).
 
-### 2. symphony-crud (w przygotowaniu)
-CRUD API dla operacji danych.
+### 2. symphony-crud
+Symfony 7 CRUD API dla ofert z PostgreSQL i Docker. Zobacz [symphony-crud/README.md](symphony-crud/README.md).
