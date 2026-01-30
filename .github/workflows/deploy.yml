@@ -8,7 +8,7 @@ on:
 
 env:
   GCP_REGION: europe-central2
-  ARTIFACT_REGISTRY_REPO: app
+  ARTIFACT_REGISTRY_REPO: symphony-crud
   SERVICE_NAME: symphony-crud
 
 jobs:
