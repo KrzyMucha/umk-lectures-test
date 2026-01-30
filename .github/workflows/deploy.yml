@@ -16,9 +16,6 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     
-    outputs:
-      image_url: ${{ steps.image.outputs.url }}
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,22 +35,17 @@ jobs:
         run: |
           gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev
 
-      - name: Set image tag
-        id: image
-        run: |
-          IMAGE_TAG="${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
-          echo "url=${IMAGE_TAG}" >> $GITHUB_OUTPUT
-          echo "Image tag: ${IMAGE_TAG}"
-
-      - name: Build Docker image
+      - name: Build and Push Docker image
         working-directory: ./symphony-crud/services
         run: |
+          IMAGE_TAG="${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+          echo "Building image: ${IMAGE_TAG}"
           docker buildx build \
             --platform linux/amd64 \
             --target prod \
             --cache-from type=registry,ref=${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.SERVICE_NAME }}:cache \
             --cache-to type=registry,ref=${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.SERVICE_NAME }}:cache,mode=max \
-            -t ${{ steps.image.outputs.url }} \
+            -t ${IMAGE_TAG} \
             --push \
             .
 
@@ -75,7 +67,7 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ env.SERVICE_NAME }}-dev
-          image: ${{ needs.build.outputs.image_url }}
+          image: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
           region: ${{ env.GCP_REGION }}
           flags: --allow-unauthenticated --min-instances=0 --max-instances=10 --memory=512Mi --cpu=1 --set-env-vars=APP_ENV=prod
 
@@ -105,7 +97,7 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ env.SERVICE_NAME }}-prod
-          image: ${{ needs.build.outputs.image_url }}
+          image: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
           region: ${{ env.GCP_REGION }}
           flags: --allow-unauthenticated --min-instances=0 --max-instances=100 --memory=512Mi --cpu=1 --set-env-vars=APP_ENV=prod
 
