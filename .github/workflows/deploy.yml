@@ -48,13 +48,11 @@ jobs:
           docker buildx build \
             --platform linux/amd64 \
             --target prod \
+            --cache-from type=registry,ref=${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.SERVICE_NAME }}:cache \
+            --cache-to type=registry,ref=${{ env.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.SERVICE_NAME }}:cache,mode=max \
             -t ${{ steps.image.outputs.tag }} \
-            --load \
+            --push \
             .
-
-      - name: Push Docker image
-        run: |
-          docker push ${{ steps.image.outputs.tag }}
 
   deploy-dev:
     name: Deploy to DEV
