@@ -73,13 +73,7 @@ jobs:
           service: ${{ env.SERVICE_NAME }}-dev
           image: ${{ needs.build.outputs.image-tag }}
           region: ${{ env.GCP_REGION }}
-          flags: |
-            --allow-unauthenticated
-            --min-instances=0
-            --max-instances=10
-            --memory=512Mi
-            --cpu=1
-            --set-env-vars=APP_ENV=prod
+          flags: --allow-unauthenticated --min-instances=0 --max-instances=10 --memory=512Mi --cpu=1 --set-env-vars=APP_ENV=prod
 
       - name: Show DEV URL
         run: |
@@ -106,13 +100,7 @@ jobs:
           service: ${{ env.SERVICE_NAME }}-prod
           image: ${{ needs.build.outputs.image-tag }}
           region: ${{ env.GCP_REGION }}
-          flags: |
-            --allow-unauthenticated
-            --min-instances=0
-            --max-instances=100
-            --memory=512Mi
-            --cpu=1
-            --set-env-vars=APP_ENV=prod
+          flags: --allow-unauthenticated --min-instances=0 --max-instances=100 --memory=512Mi --cpu=1 --set-env-vars=APP_ENV=prod
 
       - name: Show PROD URL
         run: |
